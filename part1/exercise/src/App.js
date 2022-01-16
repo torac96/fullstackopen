@@ -4,17 +4,17 @@ const Header = (props) => (
   <h1>{props.title}</h1>
 )
 
+const Part = (props) => (
+  <p>
+    {props.text}
+  </p>
+)
+
 const Content = (props) => (
   <div>
-    <p>
-      {props.content1}
-    </p>
-    <p>
-      {props.content2}
-    </p>
-    <p>
-      {props.content3}
-    </p>
+    <Part text={props.content1} />
+    <Part text={props.content2} />
+    <Part text={props.content3} />
   </div>
 )
 
