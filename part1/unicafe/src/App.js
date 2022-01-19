@@ -2,23 +2,40 @@ import React, { useState } from 'react'
 
 const Header = ({title}) => <h1>{title}</h1>
 const Button = ({handleClick, text}) => <button onClick={handleClick}>{text}</button>
+
+const StatisticLine = ({text, value}) =><tr><td>{text}</td><td>{value}</td></tr>
+
 const Statistic = ({good, neutral, bad}) => {
 
   const total = good + neutral + bad;
-  const average = total / 3;
-  const positive = (good / total) * 100;
+  const average = (total / 3).toFixed(1);
+  const positive = ((good / total) * 100).toFixed(1);
+
+  if(total > 0){
+    return (
+      <>
+        <h2>Statistic</h2>
+        <table>
+          <tbody>
+            <StatisticLine text="good" value={good} />
+            <StatisticLine text="neutral" value={neutral} />
+            <StatisticLine text="bad" value={bad} />
+            <StatisticLine text="all" value={total} />
+            <StatisticLine text="average" value={average} />
+            <StatisticLine text="positive" value={positive} />
+          </tbody>
+        </table>
+      </>
+    )
+  }
 
   return (
     <>
       <h2>Statistic</h2>
-      <div>good {good}</div>
-      <div>neutral {neutral}</div>
-      <div>bad {bad}</div>
-      <div>all {total}</div>
-      <div>average {average}</div>
-      <div>positive {positive}</div>
+      <div>No feedback given</div>
     </>
   )
+  
 }
 
 const App = () => {
