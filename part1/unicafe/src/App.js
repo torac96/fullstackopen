@@ -2,14 +2,24 @@ import React, { useState } from 'react'
 
 const Header = ({title}) => <h1>{title}</h1>
 const Button = ({handleClick, text}) => <button onClick={handleClick}>{text}</button>
-const Statistic = ({good, neutral, bad}) => (
-  <>
-    <h2>Statistic</h2>
-    <div>good {good}</div>
-    <div>neutral {neutral}</div>
-    <div>bad {bad}</div>
-  </>
-)
+const Statistic = ({good, neutral, bad}) => {
+
+  const total = good + neutral + bad;
+  const average = total / 3;
+  const positive = (good / total) * 100;
+
+  return (
+    <>
+      <h2>Statistic</h2>
+      <div>good {good}</div>
+      <div>neutral {neutral}</div>
+      <div>bad {bad}</div>
+      <div>all {total}</div>
+      <div>average {average}</div>
+      <div>positive {positive}</div>
+    </>
+  )
+}
 
 const App = () => {
   const title="Give feedback"
