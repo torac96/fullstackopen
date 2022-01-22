@@ -1,6 +1,18 @@
 import React, { useState } from 'react'
 
-const Button = ({handleClick, text}) => <button onClick={handleClick}> {text} </button>
+const Button = ({ handleClick, text }) => <button onClick={handleClick}> {text} </button>
+
+const Display = ({ title = '', text }) => {
+  const hiTitle = (title !== '') ? <h1>{title}</h1> : '';
+  return (
+    <>
+      { title !== '' &&
+        <h1>{title}</h1>  
+      }
+      <div>{text}</div>
+    </>
+  )
+}
 
 const App = () => {
   const anecdotes = [
@@ -12,7 +24,7 @@ const App = () => {
     'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.',
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients'
   ]
-   
+
   const [selected, setSelected] = useState(0)
   const [points, setPoints] = useState(new Array(anecdotes.length).fill(0))
 
@@ -22,21 +34,28 @@ const App = () => {
   }
 
   const handleVoteClick = () => {
-    const copy = [ ...points ]
-    copy[selected] = copy[selected] + 1  
+    const copy = [...points]
+    copy[selected] = copy[selected] + 1
     setPoints(copy)
   }
 
+  const highestVote = () => {
+    const max = Math.max(...points);
+    const index = points.indexOf(max);
+    return anecdotes[index];
+  }
+
+  const max = points.reduce(function(prev, current) {
+    return (prev > current) ? prev : current
+  }) 
+
   return (
     <>
-      <div>
-        {anecdotes[selected]}
-      </div>
-      <div>
-        has {points[selected]} votes
-      </div>
-      <Button handleClick={() => handleVoteClick()} text="vote"/>
-      <Button handleClick={() => handleNextClick()} text="Next anecdote"/>
+      <Display text={anecdotes[selected]} />
+      <Display text={'has' + points[selected] + 'votes'} />
+      <Button handleClick={() => handleVoteClick()} text="vote" />
+      <Button handleClick={() => handleNextClick()} text="Next anecdote" />
+      <Display title="Anecdote with most votes" text={highestVote()} />
     </>
   )
 }
