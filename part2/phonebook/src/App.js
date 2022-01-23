@@ -12,11 +12,23 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault();
-    const newPerson = {
-      name: newName
-    };
-    setPersons(persons.concat(newPerson));
-    setNewName('');
+    if(newName === ''){
+      alert('Please fill the name');
+    }else{
+      const newPerson = {
+        name: newName
+      };
+  
+      const duplicate = persons.some((person) => JSON.stringify(person) === JSON.stringify(newPerson))
+      if(duplicate){
+        alert(`${newName} is already added to phonebook`);
+      }else{
+        setPersons(persons.concat(newPerson));
+        setNewName('');
+      }
+    }
+    
+    
   }
 
   return (
@@ -24,7 +36,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <form onSubmit={addPerson}>
         <div>
-          name: <input value={newName} onChange={handlepersonChange}/>
+          name: <input value={newName} onChange={handlepersonChange} />
         </div>
         <div>
           <button type="submit">add</button>
