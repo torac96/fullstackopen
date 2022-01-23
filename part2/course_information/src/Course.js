@@ -9,19 +9,29 @@ const Content = ({parts}) => (
     {
       parts && parts.map( elem => 
         (
-          elem.name && <Part key={elem.name} content={elem.name + ' ' + elem.exercises} /> 
+          elem.name && <Part key={elem.name} content={elem.name + ' ' + (elem.exercises ? elem.exercises : '')} /> 
         )
       )
     }
   </div>
 )
 
+const Total = ({parts}) => {
+  const total = parts.reduce((sum, value) =>{
+    return (value.name && value.exercises>0 ) ? sum +value.exercises : sum
+  }, 0)
+
+  return (
+    <b>total of {total} exercises</b>
+  );
+}
 
 const Course = ({course}) => {
   return (
 		<div>
 			<Header course={course.name} />
       <Content parts={course.parts} />
+			<Total parts={course.parts} />
 		</div>
 	)
 }
