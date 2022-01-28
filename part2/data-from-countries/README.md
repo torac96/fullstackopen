@@ -2,16 +2,18 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### To test the project
+## To test the project
 
 create a file .env and inside put:
+```shell
 # .env
 
 REACT_APP_API_KEY=YOUR_API_KEY
+```
+
+## Available Scripts
+
+In the project directory, you can run:
 
 ### `npm start`
 
