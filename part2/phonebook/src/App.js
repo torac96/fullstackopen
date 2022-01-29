@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
-import axios from 'axios';
+import personService from './services/persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,13 +10,9 @@ const App = () => {
   const [newPhone, setNewPhone] = useState('');
   const [filterValue, setFilterValue] = useState('');
 
-  useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
-  }, [])
+  useEffect(() => getPersons(), [])
+
+  const getPersons = () => personService.getAll().then(persons => setPersons(persons))
 
   const handlePersonChange = (event) => {
     setNewName(event.target.value);
@@ -30,6 +26,15 @@ const App = () => {
     setFilterValue(event.target.value);
   }
 
+  const handleRemovePerson = (id) => {
+    const person = persons.find(person => person.id === id)
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      personService.remove(id).then(() => {
+        setPersons(persons.filter(person => person.id !== id))
+      })
+    }
+  }
+
   const addPerson = (event) => {
     event.preventDefault();
     if (newName === '' || newPhone === '') {
@@ -40,26 +45,30 @@ const App = () => {
         phone: newPhone
       };
 
-      const duplicate = persons.some((person) => JSON.stringify(person) === JSON.stringify(newPerson))
+      const duplicate = persons.find((person) => person.name === newPerson.name)
 
       if (duplicate) {
-        alert(`${newName} is already added to phonebook`);
+        if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+          personService.update(duplicate.id, newPerson).then(returnedPerson => {
+            setPersons(persons.map(person => person.id !== duplicate.id ? person : returnedPerson))
+            setNewName('');
+            setNewPhone('');
+          })
+        }
       } else {
-        setPersons(persons.concat(newPerson));
-        setNewName('');
-        setNewPhone('');
+        personService
+          .create(newPerson)
+          .then(returnedPerson => {
+            setPersons(persons.concat(returnedPerson));
+            setNewName('');
+            setNewPhone('');
+          })
       }
 
     }
   }
 
-  const personFormInfo = {
-    addPerson: addPerson,
-    newName: newName,
-    handlePersonChange: handlePersonChange,
-    newPhone: newPhone,
-    handlePhoneChange: handlePhoneChange
-  }
+  const personFormInfo = { addPerson, newName, handlePersonChange, newPhone, handlePhoneChange }
 
   const personsToShow = filterValue
     ? persons.filter((person) => person.name.toLowerCase().includes(filterValue.toLowerCase()))
@@ -67,15 +76,15 @@ const App = () => {
 
   return (
     <div>
-    
+
       <h2>Phonebook</h2>
       <Filter filterValue={filterValue} handleFilterChange={handleFilterChange} />
-      
+
       <h2>Add a New</h2>
-      <PersonForm personFormInfo={personFormInfo}/>
-      
+      <PersonForm personFormInfo={personFormInfo} />
+
       <h2>Numbers</h2>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} handleRemovePerson={handleRemovePerson} />
 
     </div>
   )
