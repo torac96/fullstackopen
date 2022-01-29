@@ -3,12 +3,17 @@ import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 import personService from './services/persons';
+import Notification from './components/Notification';
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newPhone, setNewPhone] = useState('');
   const [filterValue, setFilterValue] = useState('');
+  const [notification, setNotification] = useState(null)
+  const [notificationClass, setNotificationClass] = useState('success')
+
 
   useEffect(() => getPersons(), [])
 
@@ -31,6 +36,14 @@ const App = () => {
     if (window.confirm(`Delete ${person.name} ?`)) {
       personService.remove(id).then(() => {
         setPersons(persons.filter(person => person.id !== id))
+      })
+      .catch(error => {
+        setNotification(`Information of ${person.name} was already been removed from server`)
+        setNotificationClass('error')
+        setTimeout(() => {
+          setNotification(null)
+        }, 5000)
+        setPersons(persons.filter(n => n.id !== id))
       })
     }
   }
@@ -60,6 +73,12 @@ const App = () => {
           .create(newPerson)
           .then(returnedPerson => {
             setPersons(persons.concat(returnedPerson));
+            setNotification(`Added ${returnedPerson.name}`)
+            setNotificationClass('success')
+            setTimeout(() => {
+              setNotification(null)
+            }, 5000)
+
             setNewName('');
             setNewPhone('');
           })
@@ -76,16 +95,11 @@ const App = () => {
 
   return (
     <div>
-
       <h2>Phonebook</h2>
+      <Notification className={notificationClass} message={notification} />
       <Filter filterValue={filterValue} handleFilterChange={handleFilterChange} />
-
-      <h2>Add a New</h2>
       <PersonForm personFormInfo={personFormInfo} />
-
-      <h2>Numbers</h2>
       <Persons persons={personsToShow} handleRemovePerson={handleRemovePerson} />
-
     </div>
   )
 }

@@ -5,7 +5,12 @@ const PersonDetail = ({ person, handleRemovePerson }) => (
 )
 
 const Persons = ({ persons, handleRemovePerson }) => {
-  return persons?.map(person => <PersonDetail key={person.name} person={person} handleRemovePerson={handleRemovePerson} />);
+  return (
+    <>
+      <h2>Numbers</h2>
+      {persons?.map(person => <PersonDetail key={person.name} person={person} handleRemovePerson={handleRemovePerson} />)}
+    </>
+  )
 }
 
 export default Persons;
