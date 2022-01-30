@@ -12,8 +12,6 @@ const App = () => {
   const [newPhone, setNewPhone] = useState('');
   const [filterValue, setFilterValue] = useState('');
   const [notification, setNotification] = useState(null)
-  const [notificationClass, setNotificationClass] = useState('success')
-
 
   useEffect(() => getPersons(), [])
 
@@ -31,20 +29,23 @@ const App = () => {
     setFilterValue(event.target.value);
   }
 
+  const notifyWith = (message, type = 'success') => {
+    setNotification({ message, type })
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
+
   const handleRemovePerson = (id) => {
     const person = persons.find(person => person.id === id)
     if (window.confirm(`Delete ${person.name} ?`)) {
       personService.remove(id).then(() => {
         setPersons(persons.filter(person => person.id !== id))
       })
-      .catch(error => {
-        setNotification(`Information of ${person.name} was already been removed from server`)
-        setNotificationClass('error')
-        setTimeout(() => {
-          setNotification(null)
-        }, 5000)
-        setPersons(persons.filter(n => n.id !== id))
-      })
+        .catch(error => {
+          notifyWith(`Information of ${person.name} was already been removed from server`, 'error')
+          setPersons(persons.filter(n => n.id !== id))
+        })
     }
   }
 
@@ -66,21 +67,20 @@ const App = () => {
             setPersons(persons.map(person => person.id !== duplicate.id ? person : returnedPerson))
             setNewName('');
             setNewPhone('');
+          }).catch(error => {
+            notifyWith(error.response.data.error, 'error')
           })
         }
       } else {
         personService
           .create(newPerson)
           .then(returnedPerson => {
+            notifyWith(`Added ${returnedPerson.name}`)
             setPersons(persons.concat(returnedPerson));
-            setNotification(`Added ${returnedPerson.name}`)
-            setNotificationClass('success')
-            setTimeout(() => {
-              setNotification(null)
-            }, 5000)
-
             setNewName('');
             setNewPhone('');
+          }).catch(error => {
+            notifyWith(error.response.data.error, 'error')
           })
       }
 
@@ -96,7 +96,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification className={notificationClass} message={notification} />
+      <Notification notification={notification} />
       <Filter filterValue={filterValue} handleFilterChange={handleFilterChange} />
       <PersonForm personFormInfo={personFormInfo} />
       <Persons persons={personsToShow} handleRemovePerson={handleRemovePerson} />
